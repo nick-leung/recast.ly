@@ -4,13 +4,31 @@ class App extends React.Component {
     this.state = {
       videos: window.exampleVideoData,
       currentVideo: window.exampleVideoData[0],
-      handleVideoListEntryTitleClick: function (video) {
-        //debugger;
-        this.setState({
-          currentVideo: video
-        });
-      }
     };
+  }
+
+  handleVideoListEntryTitleClick(video) {
+    this.setState({
+      currentVideo: video
+    });
+  }
+
+  getYouTubeVideos(query) {
+    var options = {
+      key: this.props.API_KEY,
+      query: query
+    };
+    var callback = function (videos) {
+      this.setState({
+        videos: videos,
+        currentVideo: videos[0]
+      });
+    };
+    this.props.searchYouTube(options, callback.bind(this));
+  }
+
+  componentDidMount() {
+    this.getYouTubeVideos('react tutorials');
   }
 
   render() {
@@ -18,7 +36,7 @@ class App extends React.Component {
       <div>
         <nav className="navbar">
           <div className="col-md-6 offset-md-3">
-            <Search />
+            <Search handleSearchInputChange={this.getYouTubeVideos.bind(this)} />
           </div>
         </nav>
         <div className="row">
@@ -26,7 +44,7 @@ class App extends React.Component {
             <VideoPlayer video={this.state.currentVideo} />
           </div>
           <div className="col-md-5">
-            <VideoList videos={this.state.videos} handleVideoListEntryTitleClick = {this.state.handleVideoListEntryTitleClick.bind(this)}/>
+            <VideoList videos={this.state.videos} handleVideoListEntryTitleClick={this.handleVideoListEntryTitleClick.bind(this)} />
           </div>
         </div>
       </div>
